@@ -1,0 +1,28 @@
+title 0.5 Single Page App
+
+	selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/spa
+	palvelin-->selain: text/html (div container nooteille ja lomake)
+	selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+	palvelin-->selain: main.css 
+	selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+	palvelin-->selain: spa.js
+	note over selain: 
+	Selain suorittaa spa.js:n, hakien nootit json-muotoisena 
+	palvelimelta XMLHttpRequest -olion avulla GETillä. 
+	Js luo selaimessa myös tarvittavan koodin, 
+	jotta lomakelähetykset voidaan lähettää eri
+	XMLHttpRequestilla eteenpäin, jos lomake täytetään.
+	end note 
+	selain->palvelin: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+	palvelin-->selain: data.json [{"content": "adsf", "date": 2021.11.11}, ...]
+	note over selain: 
+	Selaimessa aiemmin spa.js:ssa määritetty 
+	tapahtumakäsittelijä parsii saadun json datan ja piirtää sen selaimeen.
+	end note 
+	note over selain:
+	Ei liity varsinaiseen sivun toimintaan, mutta lopuksi selain 
+	näyttää hakevan vielä favicon.ico:n, josta 
+	tulee responsena html-muotoista dataa
+	end note 
+	selain->palvelin: GET https://studies.cs.helsinki.fi/favicon.ico
+    palvelin-->selain: text/html (course stats)

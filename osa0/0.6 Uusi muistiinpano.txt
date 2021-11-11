@@ -1,0 +1,16 @@
+title 0.6 Uusi muistiinpano
+
+	Note over selain: 
+	Selaimessa on spa.js:n myötä lomakkeeseen liitetty tapahtumankäsittelijä, 
+	joka lomakkeen lähetyksen yhteydessä luo lomaketiedoista 
+	json-muotoisen nootin, piirtää kaikki 
+	nootit uudelleen selainruutuun uusi nootti mukaan luettuna, ja sitten 
+	lähettää uuden nootin myös palvelimelle.
+	end note 
+	selain->palvelin: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa,  Req payload jsonia: {"content": "test", "date": "2022-11-11"--}
+	palvelin-->selain: Status 201, res.body: { "message": "note created"}
+	Note over selain:
+    Kun selain on saanut palveilmelta onnistuneen statuskoodin, se tulostaa 
+    palvelimen vastauksen mukana olleen onnistumisesta 
+    kertovan viesti-jsonin myös konsoliinsa. 
+    end note 

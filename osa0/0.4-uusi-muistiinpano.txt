@@ -1,0 +1,25 @@
+title 0.4 Uusi muistiinpano
+
+	selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note [request.body.note= testisyote]
+	Note over palvelin:
+	Palvelin katsoo selaimelta saamastaan requestista bodyssä 
+	olevan note-kentän, ja generoi siitä ja päivämäärästä objektin, jonka puskee notes-taulukkoon. 
+	end note
+	palvelin-->selain:  HTTP Status 302 (Res Header location:exampleapp/notes)
+	selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+	palvelin-->selain: text/html -koodi
+	selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+	palvelin-->selain: main.css
+	selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+	palvelin-->selain: main.js
+	Note over selain:
+	Selain suorittaa js-koodia pyytäen XMLHttpRequest -luokan oliolla 
+	HTTP GET kutsulla Json-muotoista dataa palvelimelta.
+	end note
+	selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+	palvelin->selain: [{ content: 'esim1', date: "2021-11-11"]}, ...]
+	Note over selain:
+	Selaimessa XMLHttpRequest -olion onreadystatechange -tapahtumaan 
+	kiinnitetty callback tarkistaa palvelimen vastauksen statuskoodit, 
+	ja jos hyväksyttyjä niin generoi DOM nodeina listaelementit ja piirtää ne selaimeen. 
+    end note
