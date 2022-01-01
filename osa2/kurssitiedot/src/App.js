@@ -38,7 +38,7 @@ const Total = (props) => {
     <>
       <p>
         {" "}
-        Number of exercises{" "}
+        Total number of exercises{" "}
         {props.parts.map((part) => Number(part.exercises)).reduce(reducer)}
       </p>
     </>
