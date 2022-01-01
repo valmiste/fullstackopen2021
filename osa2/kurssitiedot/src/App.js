@@ -1,65 +1,83 @@
-
 const Header = (props) => {
   return (
     <>
       <h1>{props.course}</h1>
     </>
+  );
+};
+
+const Course = ({course}) => {
+  return (
+    <>
+     <Header course={course.name} />
+     <Content parts={course.parts} />
+     <Total parts={course.parts} />
+    </>
   )
 }
 
-const Content = (props) => {
-  const exercises = props.parts.map(part => part.exercises)
-  const partnames = props.parts.map(part => part.partname)
+const Content = ({parts}) => {
   return (
     <div>
-      <Part partname={partnames[0]} exercises={exercises[0]} />
-      <Part partname={partnames[1]} exercises={exercises[1]} />
-      <Part partname={partnames[2]} exercises={exercises[2]} />
+      {parts.map( (part) => <Part key={part.id} partname={part.partname} exercises={part.exercises}/>)}
     </div>
-  )
-}
+  );
+};
 
 const Part = (props) => {
   return (
-    <p>{props.partname} {props.exercises}</p>
-  )
-}
+    <p>
+      {props.partname} {props.exercises}
+    </p>
+  );
+};
 
 const Total = (props) => {
   const reducer = (previousValue, currentValue) => previousValue + currentValue;
   return (
     <>
-      <p> Number of exercises {props.parts.map(part => Number(part.exercises)).reduce(reducer)}</p>
+      <p>
+        {" "}
+        Number of exercises{" "}
+        {props.parts.map((part) => Number(part.exercises)).reduce(reducer)}
+      </p>
     </>
-  )
-}
+  );
+};
 
 const App = () => {
   const course = {
-    name: 'Half Stack application development',
+    name: "Half Stack application development",
+    id: 1,
     parts: [
       {
-        name: 'Fundamentals of React',
-        exercises: 10
+        partname: "Fundamentals of React",
+        exercises: 10,
+        id: 1,
       },
       {
-        name: 'Using props to pass data',
-        exercises: 7
+        partname: "Using props to pass data",
+        exercises: 7,
+        id: 2,
       },
       {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
-  }
+        partname: "State of a component",
+        exercises: 14,
+        id: 3,
+      },
+      {
+        partname: "New test part",
+        exercises: 10,
+        id: 4,
+      },
+    ],
+  };
 
   return (
     <div>
-      <Header course={course.name} />
-      <Content parts={course.parts} />
-      <Total parts={course.parts} />
+      <Course course={course} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
