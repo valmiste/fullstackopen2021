@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const PersonForm = ({
   addNameAndNumber,
@@ -39,21 +40,21 @@ const PersonForm = ({
 const Person = (props) => {
   return (
     <li>
-    {" "}
-    {props.person.name} {props.person.number}
-  </li>
-  )
-}
+      {" "}
+      {props.person.name} {props.person.number}
+    </li>
+  );
+};
 
 const Persons = (props) => {
   return (
     <>
-    {props.contactsToShow.map((person) => 
-      <Person key={person.name} person={person}/>
-    )}
+      {props.contactsToShow.map((person) => (
+        <Person key={person.name} person={person} />
+      ))}
     </>
-  )
-}
+  );
+};
 
 const Filter = (props) => {
   return (
@@ -81,6 +82,19 @@ const App = () => {
   const [currentFilter, setNewFilter] = useState("");
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
+  useEffect(() => {
+    console.log("effect run");
+
+    const handlePersonsData = (response) => {
+      console.log("promise successful");
+      console.log(response.data);
+      setPersons(response.data);
+    };
+
+    const promiseFromPersons = axios.get("http://localhost:3001/persons")
+    promiseFromPersons.then(handlePersonsData);
+  }, []);
 
   const addNameAndNumber = (event) => {
     event.preventDefault();
@@ -126,8 +140,7 @@ const App = () => {
 
       <Filter currentFilter={currentFilter} setNewFilter={setNewFilter} />
 
-      <Persons contactsToShow={contactsToShow}/>
-
+      <Persons contactsToShow={contactsToShow} />
     </div>
   );
 };
