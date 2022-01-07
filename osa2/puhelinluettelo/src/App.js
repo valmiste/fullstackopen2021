@@ -75,9 +75,6 @@ const App = () => {
   const [persons, setPersons] = useState([
     // Add enough default data for testing.
     { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" },
   ]);
   const [currentFilter, setNewFilter] = useState("");
   const [newName, setNewName] = useState("");
@@ -108,13 +105,18 @@ const App = () => {
 
     const newContactInfoObj = {
       name: newName,
-      id: persons.length + 1,
+      // id: persons.length + 1,
       number: newNumber,
     };
 
-    setPersons((persons) => [...persons, newContactInfoObj]);
-    setNewName("");
-    setNewNumber("");
+    axios.post('http://localhost:3001/persons', newContactInfoObj)
+    .then( response => {
+      setPersons(persons.concat(response.data))
+      setNewName("");
+      setNewNumber("");
+    })
+
+    // setPersons((persons) => [...persons, newContactInfoObj]);
   };
 
   // Create filtered list with case insensitive matching.
