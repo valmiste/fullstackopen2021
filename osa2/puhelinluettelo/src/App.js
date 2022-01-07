@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persons";
 
 const PersonForm = ({
   addNameAndNumber,
@@ -42,6 +42,12 @@ const Person = (props) => {
     <li>
       {" "}
       {props.person.name} {props.person.number}
+      {" "}
+      <button type="button" onClick={() => {
+        props.removePerson(props.person.id)}
+        }>
+        delete
+      </button>
     </li>
   );
 };
@@ -50,7 +56,7 @@ const Persons = (props) => {
   return (
     <>
       {props.contactsToShow.map((person) => (
-        <Person key={person.name} person={person} />
+        <Person key={person.name} person={person} removePerson={props.removePerson}/>
       ))}
     </>
   );
@@ -83,15 +89,28 @@ const App = () => {
   useEffect(() => {
     console.log("effect run");
 
-    const handlePersonsData = (response) => {
-      console.log("promise successful");
-      console.log(response.data);
-      setPersons(response.data);
+    const handlePersonsData = (initialPersonsData) => {
+      setPersons(initialPersonsData);
     };
 
-    const promiseFromPersons = axios.get("http://localhost:3001/persons")
+    // const promiseFromPersons = axios.get("http://localhost:3001/persons")
+    const promiseFromPersons = personService.getAll();
     promiseFromPersons.then(handlePersonsData);
   }, []);
+
+  const removePerson = (id) => {
+    personService.remove(id)
+    .then( response => {
+      if (response.status === 200) {
+        console.log(`Successfully removed the person with ID ${id}`);
+      }
+    })
+    .catch( error => {
+      console.log(`Having problems with removal, is the ID: ${id} deleted already?`);
+    })
+    // Remove missing ID also from Reacts' state.
+    setPersons(persons.filter(person => person.id !== id));
+  };
 
   const addNameAndNumber = (event) => {
     event.preventDefault();
@@ -105,18 +124,15 @@ const App = () => {
 
     const newContactInfoObj = {
       name: newName,
-      // id: persons.length + 1,
+      // id: persons.length + 1, // JSON-server will create this.
       number: newNumber,
     };
 
-    axios.post('http://localhost:3001/persons', newContactInfoObj)
-    .then( response => {
-      setPersons(persons.concat(response.data))
+    personService.create(newContactInfoObj).then((updatedPersonsData) => {
+      setPersons(persons.concat(updatedPersonsData));
       setNewName("");
       setNewNumber("");
-    })
-
-    // setPersons((persons) => [...persons, newContactInfoObj]);
+    });
   };
 
   // Create filtered list with case insensitive matching.
@@ -142,7 +158,7 @@ const App = () => {
 
       <Filter currentFilter={currentFilter} setNewFilter={setNewFilter} />
 
-      <Persons contactsToShow={contactsToShow} />
+      <Persons contactsToShow={contactsToShow} removePerson={removePerson}/>
     </div>
   );
 };
