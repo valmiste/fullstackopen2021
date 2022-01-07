@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import personService from "./services/persons";
+import './index.css';
 
 const PersonForm = ({
   addNameAndNumber,
@@ -41,7 +42,7 @@ const Person = (props) => {
   return (
     <li>
       {" "}
-      {props.person.name} {props.person.number}{" "}
+      <strong>{props.person.name}</strong> {props.person.number}{" "}
       <button
         type="button"
         onClick={() => {
@@ -56,7 +57,7 @@ const Person = (props) => {
 
 const Persons = (props) => {
   return (
-    <>
+    <ul className='persons__container'>
       {props.contactsToShow.map((person) => (
         <Person
           key={person.name + person.id}
@@ -64,7 +65,7 @@ const Persons = (props) => {
           removePerson={props.removePerson}
         />
       ))}
-    </>
+    </ul>
   );
 };
 
@@ -83,6 +84,18 @@ const Filter = (props) => {
   );
 };
 
+const Notification = ({ message, isError }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className={ ( isError ? 'message__container message__container--error' : 'message__container' ) }>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     // Add enough default data for testing. External fetch should overwrite these.
@@ -91,10 +104,10 @@ const App = () => {
   const [currentFilter, setNewFilter] = useState("");
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [isError, setIsError] = useState(true);
 
   useEffect(() => {
-    console.log("effect run");
-
     const handlePersonsData = (initialPersonsData) => {
       setPersons(initialPersonsData);
     };
@@ -103,6 +116,14 @@ const App = () => {
     promiseFromPersons.then(handlePersonsData);
   }, []);
 
+  const showToast = (notificationMessage, isError = false, toastDurationInSec = 3) => {
+    setNotificationMessage(notificationMessage);
+    setIsError(isError)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, (toastDurationInSec * 1000))
+  }
+
   const removePerson = (id, personName) => {
     if (!window.confirm(`Delete ${personName}`)) return false;
 
@@ -110,13 +131,11 @@ const App = () => {
       .remove(id)
       .then((response) => {
         if (response.status === 200) {
-          console.log(`Successfully removed the person with ID ${id}`);
+          showToast(`Successfully removed the person with ID ${id}`)
         }
       })
       .catch((error) => {
-        console.log(
-          `Having problems with removal, is the ID: ${id} deleted already?`
-        );
+        showToast(`Having problems with removal, is the ID: ${id} deleted already?`, true)
       });
     // Remove missing ID also from Reacts' state.
     setPersons(persons.filter((person) => person.id !== id));
@@ -126,7 +145,7 @@ const App = () => {
     event.preventDefault();
     const existingPerson = persons.find((person) => {
       // Check if exists, case insensitively & ignore lead/trail whitespace.
-      return person.name.trim().toLowerCase() === newName.trim().toLowerCase()
+      return person.name.trim().toLowerCase() === newName.trim().toLowerCase();
     });
 
     const newContactInfoObj = {
@@ -134,22 +153,32 @@ const App = () => {
       number: newNumber,
     };
 
-    if (typeof existingPerson === 'object' && existingPerson !== null) {
+    if (typeof existingPerson === "object" && existingPerson !== null) {
       // If user already exists, check if we want to update.
       if (
         window.confirm(
-          `${newName} is already added to phonebook, replace the old number with a new one?`)
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
       ) {
-        personService.update(existingPerson.id, newContactInfoObj).then( (returnedPersonData) => {
-          setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPersonData ));
-        });
-      } 
+        personService
+          .update(existingPerson.id, newContactInfoObj)
+          .then((returnedPersonData) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : returnedPersonData
+              )
+            );
+            showToast(`Successfully updated ${returnedPersonData.name}`)
+          });
+      }
+      showToast(`Number not added or updated for ${newName}`, true, 5)
       setNewName("");
       setNewNumber("");
       return;
     }
     personService.create(newContactInfoObj).then((updatedPersonsData) => {
       setPersons(persons.concat(updatedPersonsData));
+      showToast(`Successfully added ${updatedPersonsData.name}`)
       setNewName("");
       setNewNumber("");
     });
@@ -165,8 +194,8 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
-
+      <h1>Phonebook</h1>
+      <Notification message={notificationMessage} isError={isError}/>
       <PersonForm
         addNameAndNumber={addNameAndNumber}
         newName={newName}
@@ -179,7 +208,10 @@ const App = () => {
 
       <Filter currentFilter={currentFilter} setNewFilter={setNewFilter} />
 
-      <Persons contactsToShow={contactsToShow} removePerson={removePerson} />
+      <Persons 
+        contactsToShow={contactsToShow} 
+        removePerson={removePerson}
+      />
     </div>
   );
 };
