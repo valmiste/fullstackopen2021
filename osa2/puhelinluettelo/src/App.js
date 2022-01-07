@@ -44,7 +44,7 @@ const Person = (props) => {
       {props.person.name} {props.person.number}
       {" "}
       <button type="button" onClick={() => {
-        props.removePerson(props.person.id)}
+        props.removePerson(props.person.id, props.person.name)}
         }>
         delete
       </button>
@@ -98,7 +98,10 @@ const App = () => {
     promiseFromPersons.then(handlePersonsData);
   }, []);
 
-  const removePerson = (id) => {
+  const removePerson = (id, personName) => {
+
+    if (!window.confirm(`Delete ${personName}`)) return false;
+
     personService.remove(id)
     .then( response => {
       if (response.status === 200) {
