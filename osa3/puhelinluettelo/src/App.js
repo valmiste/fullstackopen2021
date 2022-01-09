@@ -155,7 +155,6 @@ const App = () => {
       number: newNumber,
     };
 
-    // TODO: updating does not work.
     if (typeof existingPerson === "object" && existingPerson !== null) {
       // If user already exists, check if we want to update.
       if (
@@ -187,7 +186,8 @@ const App = () => {
       setNewNumber("");
     })
     .catch((error) => {
-      showToast('Could not add name and number to the server – please check your input values', true)
+      showToast(`Could not add name and number to the server due following error: 
+      ${JSON.stringify(error.response.data.errorMessage)}`, true, 7)
       console.log('error while creating:', error)
     });
     return;
