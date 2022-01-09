@@ -73,7 +73,7 @@ const Filter = (props) => {
   return (
     <p>
       <label>
-        Only show contacts starting with{" "}
+        Only show contacts containing {" "}
         <input
           type="text"
           value={props.currentFilter}
@@ -168,7 +168,7 @@ const App = () => {
           .then((returnedPersonData) => {
             setPersons(
               persons.map((person) =>
-                person.id !== existingPerson.id ? person : returnedPersonData
+                person.id === existingPerson.id ? returnedPersonData : person
               )
             );
             showToast(`Successfully updated ${returnedPersonData.name}`)
@@ -177,9 +177,6 @@ const App = () => {
             showToast(`Could not update, ${newName} is already missing from the server.`, true, 5)
           });
       }
-      showToast(`Number not added or updated for ${newName}`, true, 5)
-      setNewName("");
-      setNewNumber("");
       return;
     }
     personService.create(newContactInfoObj)
