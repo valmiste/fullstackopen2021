@@ -165,17 +165,18 @@ const App = () => {
           .then((returnedPersonData) => {
             setPersons(
               persons.map((person) =>
-                person.id !== existingPerson.id ? person : returnedPersonData
+                person.id === existingPerson.id ? returnedPersonData : person
               )
             );
             showToast(`Successfully updated ${returnedPersonData.name}`)
+          })
+          .catch((error) => {
+            showToast(`Could not update, ${newName} is already missing from the server.`, true, 5)
           });
       }
-      showToast(`Number not added or updated for ${newName}`, true, 5)
-      setNewName("");
-      setNewNumber("");
       return;
     }
+
     personService.create(newContactInfoObj).then((updatedPersonsData) => {
       setPersons(persons.concat(updatedPersonsData));
       showToast(`Successfully added ${updatedPersonsData.name}`)
